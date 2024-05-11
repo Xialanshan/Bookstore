@@ -1,13 +1,16 @@
 from typing import Any
 from django.db.models.query import QuerySet
 from django.shortcuts import render
+from django.urls import reverse
 
 # Create your views here.
-
+from .forms import ReviewForm
 from django.views.generic import ListView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin   # new
-from .models import Book
+from .models import Book, Review
 from django.db.models import Q  # new
+from django.views.generic import View
+from django.http import HttpResponseRedirect
 
 class BookListView(LoginRequiredMixin, ListView):
     model = Book
@@ -15,6 +18,7 @@ class BookListView(LoginRequiredMixin, ListView):
     template_name = "books/book_list.html"
     login_url = "account_login"     # new
 
+    
 class BookDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):  # new
     model = Book
     context_object_name = "book"
@@ -23,6 +27,26 @@ class BookDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):  
     permission_required = "books.special_status"    # new
     queryset = Book.objects.all().prefetch_related("reviews__author")   # new
     # '__'表示查找
+
+    def get_context_data(self, **kwargs: Any):
+        context = super().get_context_data(**kwargs)
+        context['form'] = ReviewForm()
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.book = self.object
+            review.author = self.request.user
+            review.save()
+            return HttpResponseRedirect(self.get_success_url())
+        else:
+            return self.render_to_response(self.get_context_data(form=form))
+
+    def get_success_url(self):
+        return reverse("book_detail", args=[str(self.object.id)])
 
 class SearchResultsListView(LoginRequiredMixin, ListView):  # new
     model = Book
@@ -35,4 +59,11 @@ class SearchResultsListView(LoginRequiredMixin, ListView):  # new
         return Book.objects.filter(
             Q(title__icontains=query) | Q(author__icontains=query)
         )
+
+class ReviewDeleteView(LoginRequiredMixin, View):
+    def post(self, request, review_id):
+        review = Review.objects.get(id=review_id)
+        if request.user == review.author:
+            review.delete()
+        return HttpResponseRedirect(reverse('book_detail', args=[str(review.book_id)]))
 
