@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "allauth", # new
     "allauth.account", # new
     "debug_toolbar",    # new
+    
     # Local
     "accounts.apps.AccountsConfig",
     "pages.apps.PagesConfig",
@@ -70,13 +71,15 @@ ACCOUNT_USERNAME_REQUIRED = False   # new
 ACCOUNT_AUTHENTICATION_METHOD = 'email'     # new
 ACCOUNT_EMAIL_REQUIRED = True       # new
 ACCOUNT_UNIQUE_EMAIL = True     # new
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'    # new
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"   # new
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = 'smtp-mail.outlook.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = env.str("EMAIL_HOST_USER") 
 EMAIL_HOST_PASSWORD = env.str("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = env.str("EMAIL_HOST_USER")
 
 SECURE_SSL_REDIRECT = env.bool("DJANGO_SECURE_SSL_REDIRECT", default=True)
 
@@ -184,8 +187,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"    # new
 CRISPY_TEMPLATE_PACK = "bootstrap5"             # new
 
-DEFAULT_FROM_EMAIL = 'admin@djangobookstore.com'    # new
-
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
@@ -219,3 +220,21 @@ SECURE_HSTS_PRELOAD = env.bool("DJANGO_SECURE_HSTS_PRELOAD", default=True)
 
 SESSION_COOKIE_SECURE = env.bool("DJANGO_SESSION_COOKIE_SECURE", default=True)
 CSRF_COOKIE_SECURE = env.bool("DJANGO_CSRF_COOKIE_SECURE", default=True)
+
+# settings.py
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}

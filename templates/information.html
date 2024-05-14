@@ -1,0 +1,13 @@
+{% extends "_base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}My Information{% endblock title %}
+
+{% block content %}
+    <h1>My Account Information</h1>
+    <p></p>
+    <p>Email: {{ request.user.email }}</p>
+    <p></p>
+    <a href="{% url 'account_change_password' %}" style="text-decoration: none;">Change Password</a>
+{% endblock %}
+
