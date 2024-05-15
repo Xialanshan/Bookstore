@@ -28,7 +28,7 @@ urlpatterns = [
     path("books/", include("books.urls")), 
         
     # User management
-    path("accounts/", include("allauth.urls")),  
+    path("accounts/", include("allauth.urls")),
 ] + static(
     settings.MEDIA_URL, 
     document_root=settings.MEDIA_ROOT

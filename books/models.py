@@ -43,7 +43,13 @@ class Review(models.Model):
         on_delete=models.CASCADE,
     )
 
+    class Meta:
+        permissions = [
+            ("can_add_review", "Can add reviews nolimit"),
+        ]
+
     def __str__(self):
         return self.review
+    
     
 

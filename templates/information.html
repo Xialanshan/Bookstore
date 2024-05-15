@@ -8,6 +8,13 @@
     <p></p>
     <p>Email: {{ request.user.email }}</p>
     <p></p>
+
+    {% if has_review_permission %}
+        <p>You are already a Premium member.</p>
+    {% else %}
+        <p>You are not a Premium member yet. <a href="{% url 'upgrade_to_premium' %}">Upgrade to Premium</a></p>
+    {% endif %}
+
     <a href="{% url 'account_change_password' %}" style="text-decoration: none;">Change Password</a>
 {% endblock %}
 

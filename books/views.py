@@ -11,6 +11,8 @@ from .models import Book, Review
 from django.db.models import Q  # new
 from django.views.generic import View
 from django.http import HttpResponseRedirect
+from django.contrib import messages
+from django.urls import reverse_lazy
 
 class BookListView(LoginRequiredMixin, ListView):
     model = Book
@@ -37,11 +39,16 @@ class BookDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):  
         self.object = self.get_object()
         form = ReviewForm(request.POST)
         if form.is_valid():
-            review = form.save(commit=False)
-            review.book = self.object
-            review.author = self.request.user
-            review.save()
-            return HttpResponseRedirect(self.get_success_url())
+            if request.user.has_perm('books.can_add_review'):
+                review = form.save(commit=False)
+                review.book = self.object
+                review.author = self.request.user
+                review.save()
+                return HttpResponseRedirect(self.get_success_url())
+            else:
+                messages.error(request, 'You do not have permission to add a review. Upgrade your permissions to continue.')
+                return HttpResponseRedirect(reverse('upgrade_to_premium') + f'?next={self.request.path}')
+
         else:
             return self.render_to_response(self.get_context_data(form=form))
 
