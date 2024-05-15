@@ -21,7 +21,7 @@ from django.conf.urls.static import static  # new
 
 urlpatterns = [
     # Django admin
-    path('anthing-but-admin/', admin.site.urls),    # new
+    path('anything-but-admin/', admin.site.urls),    # new
 
     # local apps
     path("",include("pages.urls")),
